@@ -16,7 +16,7 @@ import java.util.logging.SimpleFormatter;
  */
 public class GetPropetries {
 
-    private String lastDirectory, lastFile;
+    private String lastDirectory, lastFile, lastPlayed;
     private static String propFileName = "rnd.properties", extFolder="./data/";
     private static Logger logger = Logger.getLogger(GetPropetries.class.getName());
     private static FileHandler fh;
@@ -24,8 +24,9 @@ public class GetPropetries {
     private void getUserValues(){
         try {
             PropertiesConfiguration config = new PropertiesConfiguration(extFolder+propFileName);
-            lastDirectory = config.getString("lastDirectory");
-            lastFile = config.getString("lastFile");
+            lastDirectory = config.getString("lastDirectoryAdded");
+            lastFile = config.getString("lastFileAdded");
+            lastPlayed = config.getString("lastFilePlayed");
             /*logger.info(config.getPath());*/
         } catch (Exception e) {
             System.out.println("Exception: " + e);
@@ -69,11 +70,16 @@ public class GetPropetries {
     //getters
     public String getLastDirectory(){
         getUserValues();
-        return this.lastDirectory;
+        return lastDirectory;
     }
     public String getLastFile(){
         getUserValues();
-        return this.lastFile;
+        return lastFile;
+    }
+
+    public String getLastFilePlayed(){
+        getUserValues();
+        return lastFile;
     }
 
     /**
@@ -84,5 +90,8 @@ public class GetPropetries {
     }
     public void setLastFile(String propValue){
         setUserValues("lastFile", propValue);
+    }
+    public void setLastFilePlayed(String propValue){
+        setUserValues("lastFilePlayed", propValue);
     }
 }

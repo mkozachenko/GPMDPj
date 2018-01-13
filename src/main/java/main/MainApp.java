@@ -17,7 +17,7 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/player.fxml"));
+        loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/player2.fxml"));
         Parent root = loader.load();
         primaryStage.setResizable(false);
         primaryStage.setTitle("Player");

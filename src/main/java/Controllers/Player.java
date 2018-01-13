@@ -38,6 +38,7 @@ public class Player implements Initializable{
     private static String lastIndex="0", file;
     private double full, current, progress;
     private static int currentlyPlayingIndex;
+    private static ObservableList<Library> data;
 
     @FXML
     private Button play_btn, pause_btn, fileChooser_btn, directoryChooser_btn;
@@ -47,10 +48,13 @@ public class Player implements Initializable{
     private TextArea filesArea;
     @FXML
     private TableView libraryTable;
-    private static ObservableList<Library> data;
+
     @FXML
     private TableColumn nameCol, artistCol, albumCol;
     private TableRow clickedRow;
+
+    @FXML
+    private Label songLabel, timeLabel, countLabel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -67,8 +71,7 @@ public class Player implements Initializable{
             }
         }
         System.out.println(lastIndex);
-        currentlyPlayingIndex = getFileToPlay(0);
-
+        currentlyPlayingIndex = getFileToPlay(0, true);
     }
 
     @FXML
@@ -162,17 +165,14 @@ public class Player implements Initializable{
     public void prevSong_btn_clicked() {
         int index = currentlyPlayingIndex-1;
         mp.stop();
-        currentlyPlayingIndex = getFileToPlay(index);
-        System.out.println("PREV: "+index);
+        currentlyPlayingIndex = getFileToPlay(index, true);
     }
 
     @FXML
     public void nextSong_btn_clicked() {
         int index = currentlyPlayingIndex+1;
         mp.stop();
-        currentlyPlayingIndex = getFileToPlay(index);
-
-        System.out.println("NEXT: "+index);
+        currentlyPlayingIndex = getFileToPlay(index, true);
     }
 
     @FXML
@@ -180,12 +180,19 @@ public class Player implements Initializable{
 
     }
 
-    private static int getFileToPlay(int songIndex){
-        //String file = "src\\main\\resources\\test.mp3";
+    private int getFileToPlay(int songIndex, boolean autoplay){
+        String count = currentlyPlayingIndex+"/"+data.size();
+        String songName = data.get(songIndex).getArtist()+" - "+data.get(songIndex).getName();
         file = data.get(songIndex).getPath();
         media = new Media(new File(file).toURI().toString());
         mp = new MediaPlayer(media);
-        System.out.println("PLAYING: "+songIndex);
+        if(autoplay) {
+            mp.play();
+        }
+        countLabel.setText(count);
+        songLabel.setText(songName);
+        libraryTable.getSelectionModel().focus(songIndex);
+        new GetPropetries().setLastFilePlayed(file);
         return songIndex;
     }
 
