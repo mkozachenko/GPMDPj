@@ -47,7 +47,7 @@ public class Player implements Initializable{
     @FXML
     private TextArea filesArea;
     @FXML
-    private TableView libraryTable;
+    private TableView<Library> libraryTable;
 
     @FXML
     private TableColumn nameCol, artistCol, albumCol;
@@ -177,7 +177,8 @@ public class Player implements Initializable{
 
     @FXML
     public void tableClicked() {
-
+        Library data = libraryTable.getSelectionModel().getSelectedItem();
+        System.out.println(data.getFilename());
     }
 
     private int getFileToPlay(int songIndex, boolean autoplay){
