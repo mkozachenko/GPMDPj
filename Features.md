@@ -1,0 +1,31 @@
+# Features
+- General:
+  - [ ] Media keys support
+  - [ ] Shortcut keys support
+  - [ ] Library views:
+    - [ ] Plain (all in one list)
+    - [ ] Genres
+    - [ ] Artist
+    - [ ] Albums
+  - [ ] Last.fm integration
+  - [ ] New releases
+  - [ ] Save/Load playlists file
+  - [ ] Customizable UI colors
+  - [ ] Search, save, read lyrics
+  
+- Local library:
+  - [ ] Randomize playlist
+  - [ ] Export tracks to GPM
+  
+- Google Play Music:
+  - [ ] Native interface (embedded web page)
+  - [ ] Likes/dislikes
+  - [ ] Retreieve existing playlists
+  - [ ] Make new playlists
+  - [ ] Download tracks by artist, albums, playlists
+  - [ ] Radio:
+    - [ ] Artist
+    - [ ] Song
+    - [ ] Genre
+    - [ ] Promoted
+  - [ ] Search
