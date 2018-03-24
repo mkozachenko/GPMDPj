@@ -1,16 +1,17 @@
 package Controllers;
 
 import Database.Local;
+import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -18,7 +19,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import main.CommonData;
 import main.FileScanner;
 import main.GetPropetries;
 import main.Library;
@@ -27,6 +27,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 public class Player implements Initializable{
@@ -35,29 +36,27 @@ public class Player implements Initializable{
     private final FileChooser fileChooser = new FileChooser();
     private final DirectoryChooser directoryChooser = new DirectoryChooser();
     private ChangeListener<Duration> progressChangeListener;
-    private static String lastIndex="0", file;
-    private double full, current, progress;
-    private static int currentlyPlayingIndex;
+    private static String lastIndex, file, songString, countString;
+    private double full, current, progress,
+            volume=10;
+    private static int currentlyPlayingIndex, bound, runn, observ, ltr;
     private static ObservableList<Library> data;
+    private static Duration duration;
 
     @FXML
     private Button play_btn, pause_btn, fileChooser_btn, directoryChooser_btn;
     @FXML
-    private Slider playProgress, volumeSlider;
+    private Slider progressBar, volumeSlider;
     @FXML
     private TextArea filesArea;
     @FXML
     private TableView<Library> libraryTable;
-
     @FXML
-    private TableColumn nameCol, artistCol, albumCol;
-    private TableRow clickedRow;
-
-    @FXML
-    private Label songLabel, timeLabel, countLabel;
+    private Label songLabel, timeLabel, countLabel, volumeLabel, progressLabel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        Random rnd = new Random();
         data = libraryTable.getItems();
         Local.getAllPaths();
         for(int i=0;i<Local.getId().size();i++){
@@ -65,26 +64,175 @@ public class Player implements Initializable{
                 data.add(new Library(Local.getId().get(i).toString(), Local.getName().get(i).toString(), Local.getArtist().get(i).toString(),
                         Local.getAlbum().get(i).toString(), Local.getYear().get(i).toString(), Local.getNumber().get(i).toString(),
                         Local.getGenres().get(i).toString(), Local.getSong_path().get(i).toString(), Local.getFilename().get(i).toString()));
-                lastIndex = data.get(data.size()-1).getId();
+                //lastIndex = data.get(data.size()-1).getId();
+
             }catch (NullPointerException e){
                 System.err.println(e);
             }
         }
-        System.out.println(lastIndex);
-        currentlyPlayingIndex = getFileToPlay(0, true);
+        bound = rnd.nextInt(data.size()-1);
+        lastIndex = data.get(data.size()-1).getId();
+        System.out.println(bound+"--"+lastIndex);
+        currentlyPlayingIndex = getFileToPlay(bound, true);
+        //init volume
+        mp.setVolume(volume/100d);
+        volumeSlider.setValue(volume);
+        volumeLabel.setText(Math.round(volume)+"%");
     }
+
+    /*********************/
+    /** MEDIA CONTROLS **/
+    /*********************/
 
     @FXML
     private void PlayButton_clicked(){
         mp.play();
-        setCurrentlyPlaying(mp);
     }
 
     @FXML
     private void PauseButton_сlicked(){
         mp.pause();
-        System.out.println("Paused");
     }
+
+    @FXML
+    public void prevSong_btn_clicked() {
+        int index = currentlyPlayingIndex-1;
+        mp.stop();
+        currentlyPlayingIndex = getFileToPlay(index, true);
+    }
+
+    @FXML
+    public void nextSong_btn_clicked() {
+        int index = currentlyPlayingIndex+1;
+        mp.stop();
+        currentlyPlayingIndex = getFileToPlay(index, true);
+    }
+
+    @FXML
+    public void volumeChange(){
+        volume = volumeSlider.getValue();
+        volumeLabel.setText(Math.round(volume)+"%");
+        mp.setVolume(volume/100d);
+    }
+
+    @FXML
+    public void progressSeekDrag(){
+        double total;
+        int cur_min, cur_sec, min, sec;
+        Duration cur, tot;
+        //total = mp.getStopTime().toMillis();
+        //progressBar.setMax(total);
+        cur = new Duration(progressBar.getValue());
+        mp.pause();
+        mp.setStartTime(duration.multiply(progressBar.getValue() / 100.0));
+        mp.play();
+//        mp.seek(cur);
+//        min = (int)Math.floor((mp.getStopTime().toSeconds() / 60) % 60);
+//        sec = (int)Math.floor(mp.getStopTime().toSeconds() % 60);
+//        cur_min = (int)Math.floor((progressBar.getValue()/1000/60) % 60);
+//        cur_sec = (int)Math.floor(progressBar.getValue()/1000 % 60);
+//        System.out.println(min+":"+sec);
+//        System.out.println(cur_min+":"+cur_sec+"/"+min+":"+sec);
+//        timeLabel.setText(cur_min+":"+cur_sec+"/"+min+":"+sec);
+        /** Seek method is very slow so I had to get around it **/
+        //mp.seek(cur);
+    }
+
+    @FXML
+    public void progressSeekClick(){
+        Duration cur, tot;
+        //cur = new Duration(progressBar.getValue());
+//        mp.pause();
+//        mp.setStartTime(duration.multiply(progressBar.getValue() / 100.0));
+//        mp.play();
+        mp.seek(duration.multiply(progressBar.getValue() / 100.0));
+}
+
+    public void updates(){
+            Platform.runLater(new Runnable() {
+                public void run() {
+                    Duration currentTime = mp.getCurrentTime();
+//                    playTime.setText(formatTime(currentTime, duration));
+                    //progressBar.setDisable(duration.isUnknown());
+                    if (!progressBar.isDisabled()
+                            && duration.greaterThan(Duration.ZERO)
+                            && !progressBar.isValueChanging()) {
+                        progressLabel.setText(Math.round(currentTime.divide(duration).toMillis()*100)+"%");
+                        progressBar.setValue(currentTime.divide(duration).toMillis()
+                                * 100.0);
+                    }
+                }
+            });
+    }
+
+    /*******************/
+    /** MEDIA ACTIONS **/
+    /*******************/
+    private int getFileToPlay(int songIndex, boolean autoplay){
+        file = data.get(songIndex).getPath();
+        media = new Media(new File(file).toURI().toString());
+        mp = new MediaPlayer(media);
+        //getting info about current track
+        songString = data.get(songIndex).getName()+" - "+data.get(songIndex).getArtist();
+        countString = currentlyPlayingIndex+"/"+data.size();
+        libraryTable.getSelectionModel().select(songIndex);
+        mp.setVolume(volume/100d);
+        new GetPropetries().setLastFilePlayed(file);
+        System.out.println(data.get(songIndex).getPath());
+
+        if(autoplay) {
+            mp.play();
+        }
+        mp.setOnEndOfMedia(new Runnable() {
+            @Override
+            public void run() {
+                mp.stop();
+                currentlyPlayingIndex = getFileToPlay(songIndex+1, true);
+            }
+        });
+        mp.setOnReady(new Runnable() {
+            @Override
+            public void run() {
+                setLabels(countString, songString);
+                duration = mp.getMedia().getDuration();
+                updates();
+            }
+        });
+        mp.currentTimeProperty().addListener(new InvalidationListener() {
+            public void invalidated(Observable ov) {
+                updates();
+            }
+        });
+        return songIndex;
+    }
+
+    /*************************/
+    /** LIBRARY TABLE ITEMS **/
+    /*************************/
+    @FXML
+    public void tableClicked() {
+        libraryTable.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                if(mouseEvent.getButton().equals(MouseButton.PRIMARY)){
+                    if(mouseEvent.getClickCount() == 2){
+                        mp.stop();
+                        getFileToPlay(libraryTable.getSelectionModel().getSelectedIndex(), true);
+                    }
+                }
+            }
+        });
+    }
+
+    @FXML
+    public void itemMenuClick() {
+        Library data = libraryTable.getSelectionModel().getSelectedItem();
+        System.out.println("MENU -> "+data.getFilename());
+    }
+
+    /*******************/
+    /** FILE CONTROLS **/
+    /*******************/
 
     @FXML
     private void FileChooserClick(){
@@ -141,64 +289,22 @@ public class Player implements Initializable{
         }
     }
 
-    /** sets the currently playing label to the label of the new media player and updates the progress monitor. */
-    private void setCurrentlyPlaying(final MediaPlayer newPlayer) {
-        playProgress.setValue(0);
-        playProgress.maxProperty().bind(Bindings.createDoubleBinding(
-                () -> mp.getTotalDuration().toSeconds(),
-                mp.totalDurationProperty())
-        );
-        progressChangeListener = new ChangeListener<Duration>() {
-            @Override public void changed(ObservableValue<? extends Duration> observableValue, Duration oldValue, Duration newValue) {
-                playProgress.setValue(1.0 * newPlayer.getCurrentTime().toMillis() / newPlayer.getTotalDuration().toMillis());
-            }
-        };
-        newPlayer.currentTimeProperty().addListener(progressChangeListener);
+    /*************/
+    /** UI INFO **/
+    /*************/
 
-        String source = newPlayer.getMedia().getSource();
-        source = source.substring(0, source.length() - ".mp3".length());
-        source = source.substring(source.lastIndexOf("/") + 1).replaceAll("%20", " ");
-        //currentlyPlaying.setText("Now Playing: " + source);
+    private void initLabels(){
+        int minutes, seconds;
+        volumeLabel.setText(mp.getVolume()*100+"%");
+        countLabel.setText("0/0");
+        songLabel.setText("NAN");
+        minutes = (int)Math.floor((mp.getStopTime().toSeconds() / 60) % 60);
+        seconds = (int)Math.floor(mp.getStopTime().toSeconds() % 60);
+        timeLabel.setText("0:0"+"/"+minutes+":"+seconds);
     }
 
-    @FXML
-    public void prevSong_btn_clicked() {
-        int index = currentlyPlayingIndex-1;
-        mp.stop();
-        currentlyPlayingIndex = getFileToPlay(index, true);
-    }
-
-    @FXML
-    public void nextSong_btn_clicked() {
-        int index = currentlyPlayingIndex+1;
-        mp.stop();
-        currentlyPlayingIndex = getFileToPlay(index, true);
-    }
-
-    @FXML
-    public void tableClicked() {
-        Library data = libraryTable.getSelectionModel().getSelectedItem();
-        System.out.println(data.getFilename());
-    }
-
-    private int getFileToPlay(int songIndex, boolean autoplay){
-        String count = currentlyPlayingIndex+"/"+data.size();
-        String songName = data.get(songIndex).getArtist()+" - "+data.get(songIndex).getName();
-        file = data.get(songIndex).getPath();
-        media = new Media(new File(file).toURI().toString());
-        mp = new MediaPlayer(media);
-        if(autoplay) {
-            mp.play();
-        }
+    private void setLabels(String count, String songString){
         countLabel.setText(count);
-        songLabel.setText(songName);
-        libraryTable.getSelectionModel().focus(songIndex);
-        new GetPropetries().setLastFilePlayed(file);
-        return songIndex;
-    }
-
-    private void volumeControl(double volume){
-        volume = volumeSlider.getValue();
-        mp.setVolume(volume);
+        songLabel.setText(songString);
     }
 }

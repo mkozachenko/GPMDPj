@@ -25,12 +25,10 @@ public class FileScanner {
     private static Metadata metadata = new Metadata();
     private static Parser parser = new Mp3Parser();
     private static ParseContext parseCtx = new ParseContext();
-    private static long startTime, endTime,startTime1, endTime1;
     private static final int PAD_NAME_TO = 17;
 
     public static void scanForFiles(String path){
         File root = new File(path);
-        startTime = System.currentTimeMillis();
         try {
             boolean recursive = true;
             Collection files = FileUtils.listFiles(root, null, recursive);
@@ -38,8 +36,6 @@ public class FileScanner {
                 File file = (File) iterator.next();
                 extract(file.getAbsolutePath());
                 }
-            endTime = System.currentTimeMillis();
-            System.out.println("Extract time: " + (endTime-startTime) + " ms");
             Local.insertData2(CommonData.song_name, CommonData.song_artist, CommonData.song_album, CommonData.song_year, CommonData.song_number, CommonData.song_genres, CommonData.song_path, CommonData.song_filename);
             CommonData.song_name.clear();
             CommonData.song_artist.clear();
@@ -88,10 +84,8 @@ public class FileScanner {
     public static void extract(String filePath){
         String fileName = filePath.substring(filePath.lastIndexOf("\\")+1);
         Mp3File mp3file;
-        //fileName.matches(".*\\.mp3||.*\\.wav");
         try {
             if (fileName.matches(CommonData.supportedFormats)) {
-            //if (fileName.endsWith(".mp3") || fileName.endsWith(".wav")) {
                 new Profiler().startCount();
                 mp3file = new Mp3File(filePath);
                 ID3v2 id3v2tag = mp3file.getId3v2Tag();

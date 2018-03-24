@@ -1,4 +1,4 @@
-package Database;
+package GPM;
 
 import main.CommonData;
 
@@ -7,6 +7,7 @@ import java.sql.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class Local {
     /*
@@ -23,7 +24,7 @@ public class Local {
     private static List song_genres = new ArrayList();
     private static List song_path = new ArrayList();
     private static List song_filename = new ArrayList();
-
+    private static long startTime, endTime;
     public static void saveBackupData(){
         try {
             Class.forName("org.h2.Driver").newInstance();
@@ -47,7 +48,7 @@ public class Local {
             Class.forName("org.h2.Driver");
             con = DriverManager.getConnection("jdbc:h2:"+CommonData.lib_location+CommonData.locLib_name);
             System.out.println("Connected to H2: "+CommonData.locLib_name);
-            String sql = "INSERT INTO LIB_LOCAL ("+CommonData.locLib_columns+") VALUES (null,?,?,?,?,?,?,?,?)";
+            String sql = "INSERT INTO LIB_GMP ("+CommonData.locLib_columns+") VALUES (null,?,?,?,?,?,?,?,?)";
             PreparedStatement prepStmt = con.prepareStatement(sql);
             for(int i=1; i<values.length+1;i++){
                 prepStmt.setString(i, values[i-1]);
@@ -73,7 +74,7 @@ public class Local {
             Class.forName("org.h2.Driver");
             con = DriverManager.getConnection("jdbc:h2:"+CommonData.lib_location+CommonData.locLib_name);
             System.out.println("Connected to H2: "+CommonData.locLib_name);
-            String sql = "SELECT * FROM LIB_LOCAL";
+            String sql = "SELECT * FROM LIB_GMP";
             PreparedStatement prepStmt = con.prepareStatement(sql);
             ResultSet results = prepStmt.executeQuery();
             while (results.next())
@@ -110,7 +111,7 @@ public class Local {
             Class.forName("org.h2.Driver");
             con = DriverManager.getConnection("jdbc:h2:"+CommonData.lib_location+CommonData.locLib_name);
             System.out.println("Connected to H2: "+CommonData.locLib_name);
-            String sql = "SELECT * from LIB_LOCAL WHERE ID NOT BETWEEN 0 and "+index;
+            String sql = "SELECT * from LIB_GMP WHERE ID NOT BETWEEN 0 and "+index;
             PreparedStatement prepStmt = con.prepareStatement(sql);
             ResultSet results = prepStmt.executeQuery();
             while (results.next())
@@ -144,64 +145,31 @@ public class Local {
 
     public static void insertData(List<String> name, List<String> artist, List<String> album, List<String> year, List<String> number, List<String> genres, List<String> path, List<String> filename){
         int [] updateCounts;
-        String sql = "INSERT INTO LIB_LOCAL ("+CommonData.locLib_columns+") VALUES (null,?,?,?,?,?,?,?,?)";
-        System.out.println("START: "+LocalTime.now());
         try {
             Class.forName("org.h2.Driver");
             con = DriverManager.getConnection("jdbc:h2:"+CommonData.lib_location+CommonData.locLib_name);
             con.setAutoCommit(false);
-            PreparedStatement prepStmt = con.prepareStatement
-                    ("INSERT INTO LIB_LOCAL ("+CommonData.locLib_columns+") VALUES (null,?,?,?,?,?,?,?,?)");
-            //for(int i=0; i<path.size();i++){
-                prepStmt.setString(1, name.get(1));
-                prepStmt.setString(2, artist.get(1));
-                prepStmt.setString(3, album.get(1));
-                prepStmt.setString(4, year.get(1));
-                prepStmt.setString(5, number.get(1));
-                prepStmt.setString(6, genres.get(1));
-                prepStmt.setString(7, path.get(1));
-                prepStmt.setString(8, filename.get(1));
-
-            prepStmt.setString(1, name.get(2));
-            prepStmt.setString(2, artist.get(2));
-            prepStmt.setString(3, album.get(2));
-            prepStmt.setString(4, year.get(2));
-            prepStmt.setString(5, number.get(2));
-            prepStmt.setString(6, genres.get(2));
-            prepStmt.setString(7, path.get(2));
-            prepStmt.setString(8, filename.get(2));
-
-            prepStmt.setString(3, name.get(3));
-            prepStmt.setString(2, artist.get(3));
-            prepStmt.setString(3, album.get(3));
-            prepStmt.setString(4, year.get(3));
-            prepStmt.setString(5, number.get(3));
-            prepStmt.setString(6, genres.get(3));
-            prepStmt.setString(7, path.get(3));
-            prepStmt.setString(8, filename.get(3));
-
-            prepStmt.setString(4, name.get(4));
-            prepStmt.setString(2, artist.get(4));
-            prepStmt.setString(3, album.get(4));
-            prepStmt.setString(4, year.get(4));
-            prepStmt.setString(5, number.get(4));
-            prepStmt.setString(6, genres.get(4));
-            prepStmt.setString(7, path.get(4));
-            prepStmt.setString(8, filename.get(4));
+            PreparedStatement prepStmt = con.prepareStatement("INSERT INTO LIB_GMP VALUES (null,?,?,?,?,?,?,?,?)");
+            for(int i=0; i<path.size();i++) {
+                prepStmt.setString(1, name.get(i));
+                prepStmt.setString(2, artist.get(i));
+                prepStmt.setString(3, album.get(i));
+                prepStmt.setString(4, year.get(i));
+                prepStmt.setString(5, number.get(i));
+                prepStmt.setString(6, genres.get(i));
+                prepStmt.setString(7, path.get(i));
+                prepStmt.setString(8, filename.get(i));
                 prepStmt.addBatch();
-               /* if (i % 100 == 0) {
-                    System.out.println(i%100);*/
-                    updateCounts = prepStmt.executeBatch(); // Execute every 1000 items.
-                    //System.out.println(prepStmt);
-                    System.out.println(path.size());
-                    System.out.println(updateCounts.length);
-                //}
-            //}
+
+            }
+            System.out.println(path.size());
+            startTime = System.currentTimeMillis();
+            updateCounts = prepStmt.executeBatch(); // Execute every 1000 items.
+            endTime = System.currentTimeMillis();
+            System.out.println("Выполнение запроса: " + (endTime-startTime) + " ms");
+            System.out.println(updateCounts.length);
             con.commit();
             prepStmt.close();
-/*            con.setAutoCommit(true);*/
-            System.out.println("FINISH: "+LocalTime.now());
-
         }catch(SQLException se){
             se.printStackTrace();
             se.getNextException();
@@ -217,25 +185,23 @@ public class Local {
         }
     }
 
-    public static void insertData2(List<String> name, List<String> artist, List<String> album, List<String> year, List<String> number, List<String> genres, List<String> path, List<String> filename){
+    public static void insertData2(String name, String artist, String album, String year, String number, String genres, String path, String filename){
         int [] updateCounts;
         try {
             Class.forName("org.h2.Driver");
             con = DriverManager.getConnection("jdbc:h2:"+CommonData.lib_location+CommonData.locLib_name);
             con.setAutoCommit(false);
-            PreparedStatement prepStmt = con.prepareStatement("INSERT INTO LIB_LOCAL VALUES (null,?,?,?,?,?,?,?,?)");
-            for(int i=0; i<path.size();i++) {
-                prepStmt.setString(1, name.get(i));
-                prepStmt.setString(2, artist.get(i));
-                prepStmt.setString(3, album.get(i));
-                prepStmt.setString(4, year.get(i));
-                prepStmt.setString(5, number.get(i));
-                prepStmt.setString(6, genres.get(i));
-                prepStmt.setString(7, path.get(i));
-                prepStmt.setString(8, filename.get(i));
+            PreparedStatement prepStmt = con.prepareStatement("INSERT INTO LIB_GMP VALUES (null,?,?,?,?,?,?,?,?)");
+                prepStmt.setString(1, name);
+                prepStmt.setString(2, artist);
+                prepStmt.setString(3, album);
+                prepStmt.setString(4, year);
+                prepStmt.setString(5, number);
+                prepStmt.setString(6, genres);
+                prepStmt.setString(7, path);
+                prepStmt.setString(8, filename);
                 prepStmt.addBatch();
-            }
-            System.out.println(path.size());
+
             updateCounts = prepStmt.executeBatch(); // Execute every 1000 items.
             System.out.println(updateCounts.length);
             con.commit();

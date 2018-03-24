@@ -66,20 +66,22 @@
                      <children>
                         <Button id="btn-play" fx:id="play_btn" alignment="CENTER" contentDisplay="CENTER" layoutX="560.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#PlayButton_clicked" prefHeight="54.0" prefWidth="56.0" textAlignment="CENTER" />
                         <Button id="btn-pause" fx:id="pause_btn" alignment="CENTER" contentDisplay="CENTER" layoutX="616.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#PauseButton_сlicked" prefHeight="54.0" prefWidth="56.0" textAlignment="CENTER" />
-                        <Slider fx:id="playProgress" layoutX="34.0" layoutY="194.0" prefHeight="14.0" prefWidth="672.0" />
-                        <Slider fx:id="volumeSlider" layoutX="1178.0" layoutY="68.0" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" value="50.0" />
+                        <Slider fx:id="progressBar" layoutX="34.0" layoutY="194.0" onMouseClicked="#progressSeekClick" onMouseDragged="#progressSeekDrag" prefHeight="14.0" prefWidth="1124.0" />
+                        <Slider fx:id="volumeSlider" layoutX="1178.0" layoutY="68.0" onMouseClicked="#volumeChange" onMouseDragged="#volumeChange" onScroll="#volumeChange" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" value="50.0" />
                         <Button id="btn-prev" fx:id="prevSong_btn" layoutX="505.0" layoutY="14.0" mnemonicParsing="false" onAction="#prevSong_btn_clicked" onMouseClicked="#prevSong_btn_clicked" prefHeight="54.0" prefWidth="56.0" />
                         <Button id="btn-next" fx:id="nextSong_btn" layoutX="672.0" layoutY="14.0" mnemonicParsing="false" onAction="#nextSong_btn_clicked" onMouseClicked="#nextSong_btn_clicked" prefHeight="54.0" prefWidth="56.0" />
-                        <Label fx:id="songLabel" layoutX="596.0" layoutY="113.0">
+                        <Label fx:id="songLabel" layoutX="596.0" layoutY="113.0" text="songLabel">
                            <font>
                               <Font size="18.0" />
                            </font>
                         </Label>
-                        <Label fx:id="countLabel" layoutX="850.0" layoutY="33.0" />
-                        <Label fx:id="timeLabel" layoutX="105.0" layoutY="33.0" />
+                        <Label fx:id="countLabel" layoutX="850.0" layoutY="33.0" text="countLabel" />
+                        <Label fx:id="timeLabel" layoutX="105.0" layoutY="33.0" text="timeLable" />
+                        <Label fx:id="volumeLabel" layoutX="1185.0" layoutY="33.0" text="volumeLabel" />
+                        <Label id="progressLabel" fx:id="progressLabel" accessibleText="progressLabel" layoutX="77.0" layoutY="158.0" text="progressLabel" />
                      </children>
                   </AnchorPane>
-                  <TableView fx:id="libraryTable" onMouseClicked="#tableClicked" prefHeight="419.0" prefWidth="1233.0">
+                  <TableView fx:id="libraryTable" onContextMenuRequested="#itemMenuClick" onMouseClicked="#tableClicked" prefHeight="419.0" prefWidth="1233.0">
                      <columns>
                         <TableColumn fx:id="idCol" editable="false" prefWidth="75.0" text="id" visible="false">
                            <cellValueFactory>

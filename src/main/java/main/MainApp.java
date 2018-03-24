@@ -1,6 +1,5 @@
 package main;
 
-import static javafx.application.Application.launch;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,8 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
-    public static FXMLLoader loader;
-
+   public static FXMLLoader loader;
 
    public static void main (String[] args){
        launch(args);
