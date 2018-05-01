@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.function.IntConsumer;
 
 public class Main {
-    static String user="symphonicon@gmail.com", pass="Ruo2GE159951", and_id=""; // and_id="865904035436911"
+    static String user="***", pass="***", and_id=""; // and_id="865904035436911"
     static String token, name, artist, album, year, number, genres, f_path, filename, rootFolder = "D:\\mus_file\\";
     static long expire;
     static File folder = new File("D:\\mp3\\fil.mp3");
