@@ -1,17 +1,15 @@
-package GPM;
+package Database;
 
 import main.CommonData;
 
 import java.nio.file.FileSystems;
 import java.sql.*;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class Local {
+public class GPM {
     /*
-    * INSERT INTO LIB_LOCAL(ID, NAME, ARTIST, ALBUM, YEAR, NUMBER, GENRES)
+     * INSERT INTO LIB_LOCAL(ID, NAME, ARTIST, ALBUM, YEAR, NUMBER, GENRES)
      */
     private static final String ABSOLUTE_LOCATION = FileSystems.getDefault().getPath(CommonData.lib_location).normalize().toAbsolutePath().toString();
     private static Connection con = null;
@@ -192,15 +190,15 @@ public class Local {
             con = DriverManager.getConnection("jdbc:h2:"+CommonData.lib_location+CommonData.locLib_name);
             con.setAutoCommit(false);
             PreparedStatement prepStmt = con.prepareStatement("INSERT INTO LIB_GMP VALUES (null,?,?,?,?,?,?,?,?)");
-                prepStmt.setString(1, name);
-                prepStmt.setString(2, artist);
-                prepStmt.setString(3, album);
-                prepStmt.setString(4, year);
-                prepStmt.setString(5, number);
-                prepStmt.setString(6, genres);
-                prepStmt.setString(7, path);
-                prepStmt.setString(8, filename);
-                prepStmt.addBatch();
+            prepStmt.setString(1, name);
+            prepStmt.setString(2, artist);
+            prepStmt.setString(3, album);
+            prepStmt.setString(4, year);
+            prepStmt.setString(5, number);
+            prepStmt.setString(6, genres);
+            prepStmt.setString(7, path);
+            prepStmt.setString(8, filename);
+            prepStmt.addBatch();
 
             updateCounts = prepStmt.executeBatch(); // Execute every 1000 items.
             System.out.println(updateCounts.length);
@@ -256,6 +254,4 @@ public class Local {
     public static List getSong_path() {
         return song_path;
     }
-
-
 }

@@ -1,12 +1,14 @@
 package Database;
 
 import main.CommonData;
+import main.GetPropetries;
 
 import java.nio.file.FileSystems;
 import java.sql.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class Local {
     /*
@@ -23,6 +25,7 @@ public class Local {
     private static List song_genres = new ArrayList();
     private static List song_path = new ArrayList();
     private static List song_filename = new ArrayList();
+    private static Logger logger = Logger.getLogger(GetPropetries.class.getName());
 
     public static void saveBackupData(){
         try {
@@ -37,8 +40,9 @@ public class Local {
                 System.out.println(result1);
             }*/
         } catch(Exception e) {
-            System.out.println("Unable to connect: "+CommonData.locLib_name);
-            e.printStackTrace();
+//            System.out.println("Unable to connect: "+CommonData.locLib_name);
+//            e.printStackTrace();
+            main.ErrorHandler.handleError(logger,"error", e.getMessage());
         }
     }
 
@@ -89,9 +93,11 @@ public class Local {
                 song_filename.add(results.getString("FILENAME"));
             }
         }catch(SQLException se){
+            main.ErrorHandler.handleError(logger,"error", se.getMessage());
             se.printStackTrace();
             se.getNextException();
         }catch(Exception e){
+            main.ErrorHandler.handleError(logger,"error", e.getMessage());
             e.printStackTrace();
         }finally{
             /*System.out.println(song_id.size());
@@ -100,6 +106,7 @@ public class Local {
                 if(con!=null)
                     con.close();
             }catch(SQLException se){
+                main.ErrorHandler.handleError(logger,"error", se.getMessage());
                 se.printStackTrace();
             }
         }

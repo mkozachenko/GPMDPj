@@ -20,7 +20,7 @@
 - Google Play Music:
   - [ ] Native interface (embedded web page)
   - [ ] Likes/dislikes
-  - [ ] Retreieve existing playlists
+  - [ ] Retrieve existing playlists
   - [ ] Make new playlists
   - [ ] Download tracks by artist, albums, playlists
   - [ ] Radio:

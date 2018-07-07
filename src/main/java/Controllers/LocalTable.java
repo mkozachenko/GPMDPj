@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 
-public class Player implements Initializable{
+public class LocalTable implements Initializable{
     @FXML
     private Button play_btn, pause_btn, fileChooser_btn, directoryChooser_btn;
     @FXML
@@ -144,7 +144,7 @@ public class Player implements Initializable{
 //        mp.setStartTime(duration.multiply(progressBar.getValue() / 100.0));
 //        mp.play();
         mp.seek(duration.multiply(progressBar.getValue() / 100.0));
-}
+    }
 
     /*************************/
     /** LIBRARY TABLE ITEMS **/
