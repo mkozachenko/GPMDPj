@@ -39,6 +39,8 @@ public class LocalTable implements Initializable{
     @FXML
     protected TableView<Library> libraryTable;
     @FXML
+    protected TableView<Library> libraryTableGoogle;
+    @FXML
     private Label songLabel, timeLabel, countLabel, volumeLabel, progressLabel;
 
     private static Media media;
@@ -97,6 +99,7 @@ public class LocalTable implements Initializable{
         int index = currentlyPlayingIndex-1;
         mp.stop();
         currentlyPlayingIndex = getFileToPlay(index, true);
+        System.err.println("PrevButton clicked\nindex: "+index+"\ncurrentlyIndex: "+currentlyPlayingIndex);
     }
 
     @FXML
@@ -104,6 +107,7 @@ public class LocalTable implements Initializable{
         int index = currentlyPlayingIndex+1;
         mp.stop();
         currentlyPlayingIndex = getFileToPlay(index, true);
+        System.err.println("NextButton clicked\nindex: "+index+"\ncurrentlyIndex: "+currentlyPlayingIndex);
     }
 
     @FXML

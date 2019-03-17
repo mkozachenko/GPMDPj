@@ -5,12 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
+        <google-api.version>1.28.0</google-api.version>
+        <google-oauth.version>1.28.0</google-oauth.version>
         <mp3agic.version>0.9.1</mp3agic.version>
-        <h2.version>1.4.195</h2.version>
-        <google-api.version>1.20.0</google-api.version>
-        <tika.version>1.17</tika.version>
+        <h2.version>1.4.199</h2.version>
+        <commons-io.version>2.6</commons-io.version>
+        <tika.version>1.20</tika.version>
+        <gpm-lib.version>0.3.6</gpm-lib.version>
+        <javafx.version>13-ea+2</javafx.version>
     </properties>
-
     <groupId>symphonicon</groupId>
     <artifactId>GPMDP-j</artifactId>
     <version>0.1</version>
@@ -100,7 +103,7 @@
         <dependency>
             <groupId>com.google.oauth-client</groupId>
             <artifactId>google-oauth-client</artifactId>
-            <version>${google-api.version}</version>
+            <version>${google-oauth.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.api-client/google-api-client -->
         <dependency>
@@ -118,7 +121,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.3</version>
+            <version>4.5.7</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
         <dependency>
@@ -143,7 +146,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.4</version>
+            <version>${commons-io.version}</version>
         </dependency>
         <!--examples https://github.com/mpatric/mp3agic-examples -->
         <dependency>
@@ -154,7 +157,33 @@
         <dependency>
             <groupId>com.github.felixgail</groupId>
             <artifactId>gplaymusic</artifactId>
-            <version>0.3.1</version>
+            <version>${gpm-lib.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>versions-maven-plugin</artifactId>
+            <version>2.7</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-controls -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-media</artifactId>
+            <version>${javafx.version}</version>
         </dependency>
     </dependencies>
 </project>

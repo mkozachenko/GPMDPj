@@ -37,7 +37,7 @@ public class GPM {
         getInfo();
     }
 
-    private static void userAuth(String authUsername, String authPassword, String UDID){
+    public static void userAuth(String authUsername, String authPassword, String UDID){
         AuthToken auth = null;
         try {
             auth = TokenProvider.provideToken(authUsername, authPassword, UDID);
@@ -117,7 +117,7 @@ public class GPM {
         }
     }
 
-    private static void getFullLibrary(){
+    private static void getFullLibrary_(){
         int size=0, l=0, count=1000;
         String npt;
         List<Track> tracks=null, tracks1;
@@ -168,7 +168,62 @@ public class GPM {
         }
         System.setOut(stdout);
         System.out.println("DONE");
-        System.exit(1);
+//        System.exit(1);
+
+    }
+
+    public static void getFullLibrary(){
+        int size=0, l=0, count=1000;
+        String npt;
+        List<Track> tracks=null, tracks1;
+        ListResult<Track> trackBody, tb1, tb2;
+        /*Prints OUT stream into file*/
+        PrintStream out = null, out1 = null, stdout=System.out;
+        try {
+            out = new PrintStream(new FileOutputStream("output.txt"));
+            out1 = new PrintStream(new FileOutputStream("songs.txt"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        /**/
+        try {
+
+            System.setOut(out);
+            trackBody = api.getService().listTracks().execute().body();
+            tracks = trackBody.toList();
+
+            System.out.println("////////////SIZE: "+tracks.size());
+            System.out.println("////////////TITLE0: "+tracks.get(0).getTitle());
+            System.out.println("////////////TITLE last: "+tracks.get(tracks.size()-1).getTitle());
+            for (int i=0;i<8;i++){
+                System.out.println("\n\t---"+i);
+                npt = trackBody.getNextPageToken();
+                trackBody = api.getService().listTracks(new PagingRequest(npt, count)).execute().body();
+                tracks = trackBody.toList();
+                size = tracks.size();
+                System.out.println("SIZE: "+tracks.size());
+                System.out.println("TITLE0: "+tracks.get(0).getTitle());
+                System.out.println("TITLE last: "+tracks.get(tracks.size()-1).getTitle());
+                System.out.println("getNextPageToken: "+npt+"\n");
+                System.setOut(out1);
+                for (int k=0;k<size;k++){
+                    l++;
+                    System.out.println("\n #"+l+" ("+i+")");
+                    System.out.println(tracks.get(k).getID());
+                    System.out.println("ARTIST :: "+tracks.get(k).getArtist()+" - "+tracks.get(k).getTitle());
+                }
+                System.setOut(out);
+                if(tracks.size()<count){ //прерывает сбор треков, если очередной запрос получил меньше треков, чем требовалось. Относительно надежный показатель того, что это были последние треки пользователя.
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.setOut(stdout);
+        System.out.println("DONE");
+//        System.exit(1);
 
     }
 
@@ -208,6 +263,79 @@ public class GPM {
     }
 
     private static void getInfo(){
+        int size=0, l=0, count=1000;
+        String npt;
+        List<Track> tracks=null, tracks1;
+        ListResult<Track> trackBody, tb1, tb2;
+        /*Prints OUT stream into file*/
+        PrintStream out = null, out1 = null, stdout=System.out;
+        try {
+            out = new PrintStream(new FileOutputStream("output.txt"));
+            out1 = new PrintStream(new FileOutputStream("songs.txt"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        /**/
+        try {
+
+            System.setOut(out);
+            trackBody = api.getService().listTracks().execute().body();
+            tracks = trackBody.toList();
+            for (int i=0; i<1000; i++) {
+                if (tracks.get(i).getRating().isPresent() && tracks.get(i).getRating().get()=="1") {
+                    System.out.println("TITLE0: " + tracks.get(i).getTitle());
+                    System.out.println("getID: " + tracks.get(i).getID());
+                    System.out.println("getArtist: " + tracks.get(i).getArtist());
+                    System.out.println("getAlbum: " + tracks.get(i).getAlbum());
+                    System.out.println("getAlbumArtist: " + tracks.get(i).getAlbumArtist());
+                    System.out.println("getAlbumId: " + tracks.get(i).getAlbumId());
+                    System.out.println("getComposer: " + tracks.get(i).getComposer());
+                    System.out.println("getRating: " + tracks.get(i).getRating().get());
+                    System.out.println("getGenre: " + tracks.get(i).getGenre().get());
+
+                    System.out.println("getTrackNumber: " + tracks.get(i).getTrackNumber());
+                    System.out.println("getYear: " + tracks.get(i).getYear());
+                    System.out.println("getAlbumArtRef: " + tracks.get(i).getAlbumArtRef().toString());
+                    System.out.println("getArtistId: " + tracks.get(i).getArtistId());
+                    System.out.println("getBeatsPerMinute: " + tracks.get(i).getBeatsPerMinute());
+                    System.out.println("getClientId: " + tracks.get(i).getClientId());
+                    System.out.println("getComment: " + tracks.get(i).getComment());
+                    System.out.println("getContentType: " + tracks.get(i).getContentType());
+                    System.out.println("getCreationTimestamp: " + tracks.get(i).getCreationTimestamp());
+
+                    System.out.println("getDiscNumber: " + tracks.get(i).getDiscNumber());
+                    System.out.println("getDurationMillis: " + tracks.get(i).getDurationMillis());
+                    System.out.println("getEstimatedSize: " + tracks.get(i).getEstimatedSize());
+                    System.out.println("getExplicitType: " + tracks.get(i).getExplicitType());
+                    System.out.println("getLastModifiedTimestamp: " + tracks.get(i).getLastModifiedTimestamp());
+                    System.out.println("getLastRatingChangeTimestamp: " + tracks.get(i).getLastRatingChangeTimestamp());
+                    System.out.println("getPlayCount: " + tracks.get(i).getPlayCount());
+                    System.out.println("getVideo: " + tracks.get(i).getVideo());
+                    System.out.println("getUuid: " + tracks.get(i).getUuid());
+
+                    System.out.println("getTrackType: " + tracks.get(i).getTrackType());
+                    System.out.println("getTotalTrackCount: " + tracks.get(i).getTotalTrackCount());
+                    System.out.println("getTotalDiscCount: " + tracks.get(i).getTotalDiscCount());
+                    System.out.println("getStreamURL: " + tracks.get(i).getStreamURL(StreamQuality.HIGH));
+                    System.out.println("getStoreId: " + tracks.get(i).getStoreId());
+                    System.out.println("getSignature: " + tracks.get(i).getSignature());
+                    System.out.println("getNid: " + tracks.get(i).getNid());
+                    System.out.println("getCreationTimestamp: " + tracks.get(i).getCreationTimestamp());
+                    System.out.println("search: " + tracks.get(i).getApi().getTrackApi().search("amiina", 10).iterator().next().getArtist());
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.setOut(stdout);
+        System.out.println("DONE");
+        System.exit(1);
+
+    }
+
+    private static void getPlaylist(){
         int size=0, l=0, count=1000;
         String npt;
         List<Track> tracks=null, tracks1;

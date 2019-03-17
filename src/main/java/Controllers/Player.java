@@ -19,6 +19,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import main.FileScanner;
+import main.GPM;
 import main.GetPropetries;
 import main.Library;
 
@@ -39,6 +40,8 @@ public class Player implements Initializable{
     @FXML
     protected TableView<Library> libraryTable;
     @FXML
+    protected TableView<Library> libraryTableGoogle;
+    @FXML
     private Label songLabel, timeLabel, countLabel, volumeLabel, progressLabel;
 
     private static Media media;
@@ -49,13 +52,14 @@ public class Player implements Initializable{
     private static String lastIndex, file, songString, countString, timeString;
     private double full, current, progress, volume=10;
     private static int currentlyPlayingIndex, bound, runn, observ, ltr;
-    private static ObservableList<Library> localData;
+    private static ObservableList<Library> localData, gpmData;
     private static Duration duration;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Random rnd = new Random();
         localData = libraryTable.getItems();
+        gpmData = libraryTableGoogle.getItems();
         Local.getAllPaths();
         for(int i=0;i<Local.getId().size();i++){
             try{
@@ -97,6 +101,7 @@ public class Player implements Initializable{
         int index = currentlyPlayingIndex-1;
         mp.stop();
         currentlyPlayingIndex = getFileToPlay(index, true);
+        System.err.println("PrevButton clicked\nindex: "+index+"\ncurrentlyIndex: "+currentlyPlayingIndex);
     }
 
     @FXML
@@ -104,7 +109,9 @@ public class Player implements Initializable{
         int index = currentlyPlayingIndex+1;
         mp.stop();
         currentlyPlayingIndex = getFileToPlay(index, true);
+        System.err.println("NextButton clicked\nindex: "+index+"\ncurrentlyIndex: "+currentlyPlayingIndex);
     }
+
 
     @FXML
     public void volumeChange(){
@@ -172,7 +179,37 @@ public class Player implements Initializable{
     ////////////////////////////////////////////////
     @FXML
     public void libraryUpdate() {
+        GPM.userAuth(new GetPropetries().getUsername(), new GetPropetries().getPassword(), new GetPropetries().getAndroidID());
 
+
+
+        directoryChooser.setTitle("Select Directory");
+        // Set Initial Directory
+        try {
+            directoryChooser.setInitialDirectory(new File(System.getProperty(new GetPropetries().getLastDirectory())));
+        }catch(Exception e){
+            System.err.println(e);
+        }
+        //directoryChooser.setInitialDirectory(new File(System.getProperty("D:")));
+        Stage stage = (Stage) directoryChooser_btn.getScene().getWindow();
+        File dir = directoryChooser.showDialog(stage);
+        if (dir != null) {
+            //new GetPropetries().setLastDirectory(dir.toString());
+            FileScanner.scanForFiles(dir.getAbsolutePath());
+            Local.getAllAfterIndex(lastIndex);
+            for(int i=0;i<Local.getId().size();i++){
+                try{
+                    localData.add(new Library(Local.getId().get(i).toString(), Local.getName().get(i).toString(), Local.getArtist().get(i).toString(),
+                            Local.getAlbum().get(i).toString(), Local.getYear().get(i).toString(), Local.getNumber().get(i).toString(),
+                            Local.getGenres().get(i).toString(), Local.getSong_path().get(i).toString(), Local.getFilename().get(i).toString()));
+                }catch (NullPointerException e){
+                    System.err.println(e);
+                    System.err.println(localData.get(i).getId());
+                }
+            }
+            lastIndex = localData.get(localData.size()-1).getId();
+            System.out.println("AFTER "+lastIndex);
+        }
     }
     /*******************/
     /** FILE CONTROLS **/

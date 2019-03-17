@@ -13,4 +13,9 @@
       <module name="GPMDPj" target="9" />
     </bytecodeTargetLevel>
   </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="GPMDPj" options="" />
+    </option>
+  </component>
 </project>
